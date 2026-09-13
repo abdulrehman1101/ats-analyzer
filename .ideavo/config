@@ -1,0 +1,62 @@
+{
+  "systemSetup": [
+    {
+      "name": "Install Python Package Manager",
+      "command": "curl -LsSf https://astral.sh/uv/install.sh | sh"
+    }
+  ],
+  "templateName": "custom",
+  "projectDependencies": [
+    {
+      "name": "Create Backend Virtual Environment",
+      "command": "~/.local/bin/uv venv --clear backend/venv"
+    },
+    {
+      "name": "Install Backend Dependencies",
+      "command": "~/.local/bin/uv pip install --python backend/venv/bin/python -r backend/requirements.txt"
+    },
+    {
+      "name": "Install Frontend Dependencies",
+      "command": "npm --prefix frontend ci"
+    }
+  ],
+  "codeChecks": [
+    {
+      "name": "Check Python Syntax",
+      "command": "backend/venv/bin/python -m py_compile backend/main.py"
+    }
+  ],
+  "buildSteps": [
+    {
+      "name": "Build Frontend",
+      "command": "npm --prefix frontend run build"
+    }
+  ],
+  "runStep": [
+    {
+      "name": "Run Backend Server",
+      "command": "cd backend && ./venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+      "port": "8000"
+    },
+    {
+      "name": "Run Frontend Server",
+      "command": "npm --prefix frontend run dev -- --host 0.0.0.0 --port 5173",
+      "port": "5173"
+    }
+  ],
+  "deploySteps": [],
+  "cleanupFiles": [
+    "backend/.env",
+    "backend/venv",
+    "backend/__pycache__",
+    "frontend/node_modules",
+    "frontend/dist"
+  ],
+  "packageManager": "npm",
+  "envPaths": [
+    {
+      "name": "backend",
+      "path": "backend/.env"
+    }
+  ]
+}

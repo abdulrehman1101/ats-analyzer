@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    allowedHosts: ["e2b.app", ".e2b.app"],
     // Proxy /api calls to FastAPI during development (optional)
     proxy: {
       "/api": {
